@@ -1,3 +1,4 @@
 demo_devops_backend/
 __pycache__/
 .pytest_cache/
+.env
