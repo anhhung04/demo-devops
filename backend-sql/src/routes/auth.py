@@ -11,6 +11,7 @@ router = APIRouter()
 @router.post("/signin", tags=["auth"], response_model=AuthResponseModel)
 async def signin(
     user: UserRequest,
+    response: Response,
     service: AuthService = Depends(AuthService),
 ):
     access_token = await service.signin(user)
