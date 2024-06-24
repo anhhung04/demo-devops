@@ -2,6 +2,9 @@ import os
 import uvicorn
 from fastapi import FastAPI
 from config import config
+from repository.schema import Base
+from repository.schema.user import User  # noqa
+from sqlalchemy import create_engine
 
 app = FastAPI(docs_url='/api/docs' if not config['PROD'] else None,
               redoc_url='/api/redoc' if not config['PROD'] else None,
@@ -21,6 +24,7 @@ if __name__ == "__main__":
         'reload': not config['PROD'],
         'workers': config['workers'] if config['PROD'] else 1
     }
+    Base.metadata.create_all(bind=create_engine(config['DATABASE_URL']))
     uvicorn.run("app:app", **configs)
 
 __all__ = ["app"]
