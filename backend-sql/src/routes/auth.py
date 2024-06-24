@@ -15,6 +15,13 @@ async def signin(
     service: AuthService = Depends(AuthService),
 ):
     access_token = await service.signin(user)
+    response = APIResponse.as_json(
+        code=status.HTTP_200_OK,
+        status="Login successful",
+        data={
+            "token": access_token
+        }
+    )
     response.set_cookie(
         "auth",
         access_token,
@@ -22,13 +29,7 @@ async def signin(
         samesite="strict",
         path="/api"
     )
-    return APIResponse.as_json(
-        code=status.HTTP_200_OK,
-        status="Login successful",
-        data={
-            "token": access_token
-        }
-    )
+    return response
 
 
 @router.post("/signup", tags=["auth"], response_model=NewUserResponseModel)
