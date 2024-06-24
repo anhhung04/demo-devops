@@ -1,14 +1,20 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
+import { apiCall } from "./util";
 
-const SignIn = ({ handleLogin }) => {
-    const navigate = useNavigate();
-
-    const onSubmit = (event) => {
+const SignIn = () => {
+    const onSubmit = async (event) => {
         event.preventDefault();
-        handleLogin();
-        navigate("/dashboard");
+        const responseData = await apiCall("/api/auth/signin", "POST", {
+            email: event.target.elements["formBasicEmail"].value,
+            password: event.target.elements["formBasicPassword"].value,
+        });
+        const isSuccess = responseData && responseData["code"] === 200;
+        if (isSuccess) {
+            window.location.href = "/dashboard";
+        } else {
+            alert("Sign in failed!");
+        }
     };
 
     return (
