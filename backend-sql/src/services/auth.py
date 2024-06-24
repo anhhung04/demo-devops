@@ -15,9 +15,9 @@ class AuthService:
         self._repo = repo
         self._jwt = jwt_handler
 
-    async def signup(self, user: NewUserRequest) -> UserResponse:
+    def signup(self, user: NewUserRequest) -> UserResponse:
         try:
-            exist_user = await self._repo.find_one(
+            exist_user = self._repo.find_one(
                 query=QueryUserModel(email=user.email)
             )
             assert exist_user is None, "User already exists"
@@ -37,7 +37,7 @@ class AuthService:
         except Exception as e:
             raise HTTPException(status_code=204, detail=str(e))
 
-    async def signin(self, user: UserRequest) -> str:
+    def signin(self, user: UserRequest) -> str:
         try:
             exist_user = self._repo.find_one(
                 query=QueryUserModel(email=user.email)
@@ -48,6 +48,12 @@ class AuthService:
             token = self._jwt.create({"uid": exist_user.id})
             assert token is not None, "Failed to create token"
             return token
+        except Exception as e:
+            raise HTTPException(status_code=204, detail=str(e))
+
+    def logout(self, uid: str) -> None:
+        try:
+            self._jwt.revoke(uid)
         except Exception as e:
             raise HTTPException(status_code=204, detail=str(e))
 

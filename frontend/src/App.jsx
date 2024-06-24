@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navbar, Nav, Button } from "react-bootstrap";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Dashboard from "./Dashboard";
+import { apiCall } from "./util";
 
-const Header = ({ isAuthenticated, handleLogout }) => {
+const Header = ({ handleLogout }) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    useEffect(() => {
+        if (!isAuthenticated) {
+            apiCall("/api/user/me").then((res) =>
+                setIsAuthenticated(res && res["code"] === 200)
+            );
+        }
+    }, [isAuthenticated, setIsAuthenticated]);
+
     return (
         <Navbar bg="light" expand="lg">
             <Navbar.Brand href="/">Demo DevOps</Navbar.Brand>
@@ -42,28 +52,28 @@ const Header = ({ isAuthenticated, handleLogout }) => {
 };
 
 const App = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    const handleLogin = () => {
-        setIsAuthenticated(true);
+    const handleLogout = async () => {
+        await apiCall("/api/auth/logout", "POST");
+        window.location.href = "/";
     };
-
-    const handleLogout = () => {
-        setIsAuthenticated(false);
-    };
-
     return (
         <Router>
-            <Header
-                isAuthenticated={isAuthenticated}
-                handleLogout={handleLogout}
-            />
+            <Header handleLogout={handleLogout} />
             <div className="container mt-3">
                 <Routes>
                     <Route
-                        path="/signin"
-                        element={<SignIn handleLogin={handleLogin} />}
+                        path="/"
+                        element={
+                            <>
+                                <h1>Welcome to Demo DevOps</h1>
+                                <p>
+                                    This is a simple demo app to showcase DevOps
+                                    concepts.
+                                </p>
+                            </>
+                        }
                     ></Route>
+                    <Route path="/signin" element={<SignIn />}></Route>
                     <Route path="/signup" element={<SignUp />}></Route>
                     <Route path="/dashboard" element={<Dashboard />}></Route>
                 </Routes>

@@ -66,6 +66,9 @@ class JWTHandler:
         except Exception as e:
             return str(e)
 
+    def revoke(self, uid: str) -> None:
+        self._store.delete(uid)
+
     @staticmethod
     def sign(payload: dict, secret: str) -> str:
         payload = dumps({"alg": "HS256", "typ": "JWT"}) + "." + dumps(payload)

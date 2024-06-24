@@ -27,7 +27,6 @@ class NewUserResponseModel(ResponseModel):
 class AuthModel(BaseModel):
     token: str
 
-
 class AuthResponseModel(ResponseModel):
     data: AuthModel
 
