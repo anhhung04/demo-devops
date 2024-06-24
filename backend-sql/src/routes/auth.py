@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Response
 from utils.api import APIResponse
 
 from services.auth import AuthService
@@ -11,13 +11,22 @@ router = APIRouter()
 @router.post("/signin", tags=["auth"], response_model=AuthResponseModel)
 async def signin(
     user: UserRequest,
+    response: Response,
     service: AuthService = Depends(AuthService),
 ):
+    access_token = await service.signin(user)
+    response.set_cookie(
+        "auth",
+        access_token,
+        httponly=True,
+        samesite="strict",
+        path="/api"
+    )
     return APIResponse.as_json(
         code=status.HTTP_200_OK,
         status="Login successful",
         data={
-            "token": await service.signin(user)
+            "token": access_token
         }
     )
 
