@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
-</html>
+<!-- views/index.ejs -->
+<%- include('partials/header', { title: 'Home' }) %>
+<div class="container mt-5">
+    <h1>Welcome to Demo DevOps App</h1>
+    <p>This is the home page.</p>
+</div>
+<%- include('partials/footer') %>

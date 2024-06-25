@@ -6,3 +6,23 @@ body {
 a {
   color: #00B7FF;
 }
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1;
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+}
