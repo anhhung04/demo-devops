@@ -5,6 +5,7 @@ from services.auth import AuthService
 
 from models.dto.user import AuthResponseModel, UserRequest, NewUserResponseModel, NewUserRequest
 from models.dto.response import ResponseModel
+from models.dto.auth import OAuthRequestModel, OAuthResponseModel, TransferTokenRequestModel
 
 from utils.crypto import auth
 
@@ -63,3 +64,40 @@ async def logout(
     )
     response.delete_cookie("auth")
     return response
+
+
+@router.post("/oauth", tags=["auth"], response_model=OAuthResponseModel)
+async def oauth(
+    oauth_request: OAuthRequestModel,
+    service: AuthService = Depends(AuthService),
+):
+    return APIResponse.as_json(
+        code=status.HTTP_200_OK,
+        status="OAuth request successful",
+        data={
+            "authentication_url": service.request_oauth(oauth_request)
+        }
+    )
+
+
+@router.post("/oauth/cb", tags=["auth"], response_model=TransferTokenRequestModel)
+async def oauth_cb(
+    oauth_request: TransferTokenRequestModel,
+    service: AuthService = Depends(AuthService),
+):
+    access_token = service.transfer_token(oauth_request)
+    resp = APIResponse.as_json(
+        code=status.HTTP_200_OK,
+        status="OAuth login successful",
+        data={
+            "token": access_token
+        }
+    )
+    resp.set_cookie(
+        "auth",
+        access_token,
+        httponly=True,
+        samesite="strict",
+        path="/api"
+    )
+    return resp

@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Dashboard from "./Dashboard";
+import OAuthHandler from "./OAuthHandler";
 import { apiCall } from "./util";
 
 const Header = ({ handleLogout }) => {
@@ -76,6 +77,7 @@ const App = () => {
                     <Route path="/signin" element={<SignIn />}></Route>
                     <Route path="/signup" element={<SignUp />}></Route>
                     <Route path="/dashboard" element={<Dashboard />}></Route>
+                    <Route path="/oauth/cb" element={<OAuthHandler />}></Route>
                 </Routes>
             </div>
         </Router>

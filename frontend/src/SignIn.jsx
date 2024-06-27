@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { apiCall } from "./util";
 
 const SignIn = () => {
+    const [authPage, setAuthPage] = useState(null);
+
     const onSubmit = async (event) => {
         event.preventDefault();
         const responseData = await apiCall("/api/auth/signin", "POST", {
@@ -16,6 +18,35 @@ const SignIn = () => {
             alert("Sign in failed!");
         }
     };
+
+    const handleGoogleAuth = async () => {
+        const responseData = await apiCall("/api/auth/oauth", "POST", {
+            issuer: "google",
+            redirect_url: "/dashboard",
+        });
+        const isSuccess = responseData && responseData["code"] === 200;
+        if (isSuccess) {
+            let authPage = window.open(
+                responseData["data"]["authentication_url"]
+            );
+            setAuthPage(authPage);
+        } else {
+            alert("Sign in with Google failed!");
+        }
+    };
+
+    useEffect(() => {
+        if (authPage) {
+            window.addEventListener("message", (event) => {
+                if (event.origin === window.location.origin) {
+                    if (event.data === "success") {
+                        window.location.href = "/dashboard";
+                        authPage.close();
+                    }
+                }
+            });
+        }
+    }, [authPage]);
 
     return (
         <>
@@ -42,6 +73,9 @@ const SignIn = () => {
                         Sign In
                     </Button>
                 </Form>
+                <Button variant="primary" onClick={handleGoogleAuth}>
+                    Sign In With Google
+                </Button>
             </div>
         </>
     );
